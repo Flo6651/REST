@@ -2,7 +2,7 @@
 //include("SmartArray.php");
 
 class REST{
-	private $verbose;
+	public $verbose=false;
 	private $method;
 	private $request;
 	private $input;
