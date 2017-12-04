@@ -2,6 +2,7 @@
 //include("SmartArray.php");
 
 class REST{
+	private $verbose;
 	private $method;
 	private $request;
 	private $input;
@@ -51,7 +52,7 @@ class REST{
 			$temp1=substr($k,0,strrpos($k,"/"));
 			$data=substr($temp1,strrpos($temp1,"/")+1);
 			$temp2=substr($temp1,0,strrpos($temp1,"/"))."/*";
-			//echo $temp2;
+			if($verbose ) echo $temp2;
 			if(array_key_exists($temp2,$this->registers)){	
 				$this->output=$this->registers[$temp2]($this->data,$this->input,$data);
 			}elseif(array_key_exists($k,$this->registers)){
