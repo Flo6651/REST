@@ -14,6 +14,8 @@ class REST{
 		//$verbose=false;
 		$this->method=$_SERVER['REQUEST_METHOD'];
 		$request=@$_SERVER['PATH_INFO'];
+		//echo "m:".$method;
+		//echo "m".$_SERVER['REQUEST_METHOD'];
 		$this->data=$data;
 		$this->request=explode('/', trim($request,'/'));
 		switch($this->request[0]){
@@ -23,11 +25,11 @@ class REST{
 			xml_parser_free($p);
 
 			$this->input = $vals;*/
-			$this->output = array("error"=>"wrong language");
+			$this->output = array("error"=>"unsopported language");
 			$this->success=false;
 		break;
 		case "JSON":
-			$this->input = json_decode(file_get_contents('php://input'),true);
+			$this->input = json_decode($_SERVER['CONTENT'],true);
 		break;
 		default:
 			$this->output = Array("error"=>"wrong language");
@@ -43,6 +45,24 @@ class REST{
 	function register($funct,$key){
 		$this->registers[$key]=$funct;
 	}
+	function getData(){
+		return $this->data;
+	}
+	
+	function get($key,$default,$type="string"){
+	if(is_array($this->input)){
+		if(array_key_exists($key,$this->input)){
+			//echo $ref->quote((int)$arr[$key]);
+			switch($type){
+				case "int": return (int)$this->input[$key];
+				case "string": return (string)$this->input[$key];				
+				case "bool": return (bool)$this->input[$key];
+			}
+			//return json_encode($arr[$key]);
+		}
+	}
+	return $default;
+}
 	function execute(){
 		if($this->success){
 			$k="";
@@ -54,10 +74,11 @@ class REST{
 			$data=substr($temp1,strrpos($temp1,"/")+1);
 			$temp2=substr($temp1,0,strrpos($temp1,"/"))."/*";
 			if($this->verbose ) echo $temp2;
+			//echo $temp2."-".$k;
 			if(array_key_exists($temp2,$this->registers)){	
-				$this->output=$this->registers[$temp2]($this->data,$this->input,$data);
+				$this->output=$this->registers[$temp2]($this,$this->input,$data);
 			}elseif(array_key_exists($k,$this->registers)){
-				$this->output=$this->registers[$k]($this->data,$this->input,$data);
+				$this->output=$this->registers[$k]($this,$this->input,$data);
 			}else{
 				$this->output = Array("error"=>"Unknown path");
 			}
