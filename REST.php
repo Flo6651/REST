@@ -21,6 +21,7 @@ class REST{
     * */
     
    function __construct($data){
+	  if(@$_SERVER['CONTENT']==null) $_SERVER['CONTENT']=file_get_contents('php://input');
       $this->method=$_SERVER['REQUEST_METHOD'];
       $request=@$_SERVER['PATH_INFO'];
       $this->data=$data;
@@ -31,7 +32,7 @@ class REST{
          $this->success=false;
       break;
       case "JSON":
-         $this->input = json_decode($_SERVER['CONTENT'],true);
+         $this->input = json_decode(@$_SERVER['CONTENT'],true);
       break;
       default:
          $this->output = Array("Error"=>"wrong language");
@@ -110,7 +111,16 @@ class REST{
             $this->output = Array("error"=>"Unknown path");
          }
       }   
-   echo json_encode($this->output);
+      switch($this->request[0]){      //selceting the language
+         case "XML":
+         $this->output = array("Error"=>"unsopported language");
+         $this->success=false;
+      break;
+      case "JSON":
+			echo json_encode($this->output);  
+         break;
+      default:
+      }
    }
 }
 
