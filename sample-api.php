@@ -1,7 +1,7 @@
 <?php
 include("./REST.php");
 $_SERVER['CONTENT']=file_get_contents('php://input');	//
-
+$conn=null;
 $r=new REST($conn);
 
 /*
@@ -29,5 +29,6 @@ $r->register(function($ref,$input,$data){
 	
 },"GET:path/");
 
-
+//Executing of the Framework
+$r->execute();
 ?>
